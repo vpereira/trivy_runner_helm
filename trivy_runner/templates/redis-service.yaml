@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  type: ClusterIP  # Default type, accessible only within the cluster
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis  # use the label app=redis to select the pods to expose
