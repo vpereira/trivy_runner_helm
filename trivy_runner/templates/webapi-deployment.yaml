@@ -1,0 +1,34 @@
+# mychart/templates/webapi-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapi
+  template:
+    metadata:
+      labels:
+        app: webapi
+    spec:
+      containers:
+      - name: webapi
+        image: "{{ .Values.imageRepository }}/{{ .Values.workers.webapi.image }}"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: reports
+          mountPath: /app/reports
+        env:
+        - name: REDIS_HOST
+          value: {{ .Values.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+
+
+      volumes:
+      - name: reports
+        hostPath:
+          path: /path/to/local/trivy-reports

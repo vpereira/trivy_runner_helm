@@ -1,0 +1,35 @@
+# mychart/templates/pullworker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pullworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pullworker
+  template:
+    metadata:
+      labels:
+        app: pullworker
+    spec:
+      containers:
+      - name: pullworker
+        image: "{{ .Values.imageRepository }}/{{ .Values.workers.pullworker.image }}"
+        volumeMounts:
+        - name: reports
+          mountPath: /app/reports
+        - name: images
+          mountPath: /app/images
+        env:
+        - name: REDIS_HOST
+          value: {{ .Values.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote}}
+      volumes:
+      - name: reports
+        hostPath:
+          path: /path/to/local/trivy-reports
+      - name: images
+        hostPath:
+          path: /path/to/local/trivy-images

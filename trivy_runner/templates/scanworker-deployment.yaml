@@ -1,0 +1,37 @@
+# mychart/templates/scanworker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scanworker
+  template:
+    metadata:
+      labels:
+        app: scanworker
+    spec:
+      containers:
+      - name: scanworker
+        image: "{{ .Values.imageRepository }}/{{ .Values.workers.scanworker.image }}"
+        volumeMounts:
+        - name: reports
+          mountPath: /app/reports
+        - name: images
+          mountPath: /app/images
+        env:
+        - name: REDIS_HOST
+          value: {{ .Values.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+        - name: PUSH_TO_CATALOG
+          value: "true"
+      volumes:
+      - name: reports
+        hostPath:
+          path: /path/to/local/trivy-reports  # Adjust path as needed
+      - name: images
+        hostPath:
+          path: /path/to/local/trivy-images  # Adjust path as needed

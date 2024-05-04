@@ -1,0 +1,35 @@
+# mychart/templates/pushwrorker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushwrorker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pushwrorker
+  template:
+    metadata:
+      labels:
+        app: pushwrorker
+    spec:
+      containers:
+      - name: pushwrorker
+        image: "{{ .Values.imageRepository }}/{{ .Values.workers.pushworker.image }}"
+        volumeMounts:
+        - name: reports
+          mountPath: /app/reports
+        - name: images
+          mountPath: /app/images
+        env:
+        - name: REDIS_HOST
+          value: {{ .Values.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+      volumes:
+      - name: reports
+        hostPath:
+          path: /path/to/local/trivy-reports
+      - name: images
+        hostPath:
+          path: /path/to/local/trivy-images

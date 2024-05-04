@@ -1,0 +1,35 @@
+# mychart/templates/getsizeworker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: getsizeworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: getsizeworker
+  template:
+    metadata:
+      labels:
+        app: getsizeworker
+    spec:
+      containers:
+      - name: getsizeworker
+        image:  "{{ .Values.imageRepository }}/{{ .Values.workers.getsizeworker.image }}"
+        volumeMounts:
+        - name: reports
+          mountPath: /app/reports
+        - name: images
+          mountPath: /app/images
+        env:
+        - name: REDIS_HOST
+          value: {{ .Values.redis.host }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+      volumes:
+      - name: reports
+        hostPath:
+          path: /path/to/local/trivy-reports
+      - name: images
+        hostPath:
+          path: /path/to/local/trivy-images
