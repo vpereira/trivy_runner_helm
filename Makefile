@@ -5,3 +5,6 @@ apply:
 
 destroy:
 	helm uninstall trivy-runner
+
+lint:
+	helm lint trivy_runner
